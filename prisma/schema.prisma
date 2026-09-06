@@ -2,11 +2,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Note: Prisma does not have official native support for Oracle Database. 
-// A typical workaround is to use a community adapter or standard SQL. 
-// For this generation, we use a generic SQL provider.
 datasource db {
-  provider = "postgresql" // Using PostgreSQL as a placeholder, as Prisma lacks an official Oracle provider
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -36,7 +33,7 @@ model Product {
   description String
   price       Float
   stock       Int            @default(0)
-  categoryId  String
+  categoryId  String        
   category    Category       @relation(fields: [categoryId], references: [id])
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -46,7 +43,7 @@ model Product {
 
 model ProductImage {
   id        String   @id @default(cuid())
-  productId String
+  productId String  
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   fileId    String
   imageUrl  String
@@ -56,7 +53,7 @@ model ProductImage {
 
 model Order {
   id         String      @id @default(cuid())
-  userId     String
+  userId     String     
   user       User        @relation(fields: [userId], references: [id])
   totalPrice Float
   status     String      @default("PENDING") // PENDING, PAID, PREPARING, SHIPPED, COMPLETED, CANCELLED
@@ -66,9 +63,9 @@ model Order {
 
 model OrderItem {
   id        String  @id @default(cuid())
-  orderId   String
+  orderId   String 
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
+  productId String 
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
@@ -83,3 +80,4 @@ model Setting {
   facebook     String?
   lineId       String?
 }
+
