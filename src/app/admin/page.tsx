@@ -1,6 +1,24 @@
 import { Package, Users, ShoppingCart, DollarSign } from 'lucide-react';
+import prisma from '@/lib/prisma';
 
-export default function AdminDashboard() {
+export const dynamic = 'force-dynamic';
+
+export default async function AdminDashboard() {
+  const [productCount, orderCount, customerCount, orders] = await Promise.all([
+    prisma.product.count(),
+    prisma.order.count(),
+    prisma.user.count({ where: { role: 'CUSTOMER' } }),
+    prisma.order.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+      include: { user: true },
+    })
+  ]);
+
+  const totalSales = orders
+    .filter(o => o.status === 'COMPLETED' || o.status === 'PAID')
+    .reduce((sum, order) => sum + order.totalPrice, 0);
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6">ภาพรวมระบบ (Dashboard)</h1>
@@ -14,7 +32,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">ยอดขายรวม</p>
-            <p className="text-2xl font-bold text-gray-800">฿145,200</p>
+            <p className="text-2xl font-bold text-gray-800">฿{totalSales.toLocaleString()}</p>
           </div>
         </div>
 
@@ -24,7 +42,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">คำสั่งซื้อทั้งหมด</p>
-            <p className="text-2xl font-bold text-gray-800">324</p>
+            <p className="text-2xl font-bold text-gray-800">{orderCount}</p>
           </div>
         </div>
 
@@ -34,7 +52,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">สินค้าในระบบ</p>
-            <p className="text-2xl font-bold text-gray-800">86</p>
+            <p className="text-2xl font-bold text-gray-800">{productCount}</p>
           </div>
         </div>
 
@@ -44,7 +62,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">ลูกค้าทั้งหมด</p>
-            <p className="text-2xl font-bold text-gray-800">1,204</p>
+            <p className="text-2xl font-bold text-gray-800">{customerCount}</p>
           </div>
         </div>
 
@@ -54,7 +72,6 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold text-gray-800">คำสั่งซื้อล่าสุด</h2>
-          <button className="text-sm text-primary hover:underline">ดูทั้งหมด</button>
         </div>
         
         <div className="overflow-x-auto">
@@ -69,24 +86,35 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="text-sm text-gray-700">
-              {[
-                { id: 'ORD-00324', customer: 'สมชาย ใจดี', date: '05 ก.ย. 2026', total: 3290.00, status: 'รอชำระเงิน', color: 'bg-yellow-100 text-yellow-700' },
-                { id: 'ORD-00323', customer: 'วิภา รักสวย', date: '05 ก.ย. 2026', total: 450.00, status: 'กำลังจัดเตรียม', color: 'bg-blue-100 text-blue-700' },
-                { id: 'ORD-00322', customer: 'เอกพล ทองมาก', date: '04 ก.ย. 2026', total: 12500.00, status: 'จัดส่งแล้ว', color: 'bg-purple-100 text-purple-700' },
-                { id: 'ORD-00321', customer: 'นรี วงศ์สุวรรณ', date: '03 ก.ย. 2026', total: 790.00, status: 'เสร็จสิ้น', color: 'bg-green-100 text-green-700' },
-              ].map((order, i) => (
-                <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
-                  <td className="py-4 text-primary font-medium">{order.id}</td>
-                  <td className="py-4">{order.customer}</td>
-                  <td className="py-4">{order.date}</td>
-                  <td className="py-4 font-medium">฿{order.total.toLocaleString()}</td>
-                  <td className="py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.color}`}>
-                      {order.status}
-                    </span>
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-gray-500">
+                    ยังไม่มีคำสั่งซื้อในระบบ
                   </td>
                 </tr>
-              ))}
+              ) : (
+                orders.map((order) => {
+                  let color = 'bg-gray-100 text-gray-700';
+                  if (order.status === 'PENDING') color = 'bg-yellow-100 text-yellow-700';
+                  if (order.status === 'PREPARING') color = 'bg-blue-100 text-blue-700';
+                  if (order.status === 'SHIPPED') color = 'bg-purple-100 text-purple-700';
+                  if (order.status === 'COMPLETED') color = 'bg-green-100 text-green-700';
+                  
+                  return (
+                    <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50">
+                      <td className="py-4 text-primary font-medium">{order.id.slice(0, 8)}...</td>
+                      <td className="py-4">{order.user.name}</td>
+                      <td className="py-4">{order.createdAt.toLocaleDateString('th-TH')}</td>
+                      <td className="py-4 font-medium">฿{order.totalPrice.toLocaleString()}</td>
+                      <td className="py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${color}`}>
+                          {order.status}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
             </tbody>
           </table>
         </div>

@@ -35,12 +35,7 @@ export default function AdminLayout({
                 <span>รายการคำสั่งซื้อ</span>
               </Link>
             </li>
-            <li>
-              <Link href="/admin/customers" className="flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
-                <Users className="w-5 h-5" />
-                <span>ข้อมูลลูกค้า</span>
-              </Link>
-            </li>
+
             <li>
               <Link href="/admin/settings" className="flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
                 <Settings className="w-5 h-5" />
