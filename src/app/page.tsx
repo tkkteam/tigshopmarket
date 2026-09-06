@@ -5,25 +5,38 @@ import Image from 'next/image';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // Fetch real data from Neon database
-  const categories = await prisma.category.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 12,
-  });
+  let categories: any[] = [];
+  let products: any[] = [];
+  let errorMsg = "";
 
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-    include: {
-      images: {
-        orderBy: { sortOrder: 'asc' },
-        take: 1,
+  try {
+    categories = await prisma.category.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 12,
+    });
+
+    products = await prisma.product.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+      include: {
+        images: {
+          orderBy: { sortOrder: 'asc' },
+          take: 1,
+        },
       },
-    },
-  });
+    });
+  } catch (e: any) {
+    errorMsg = JSON.stringify(e, Object.getOwnPropertyNames(e));
+  }
 
   return (
     <div className="space-y-8">
+      {errorMsg && (
+        <div className="bg-red-100 p-4 rounded text-red-700">
+          <strong>Database Error:</strong>
+          <pre className="text-xs whitespace-pre-wrap">{errorMsg}</pre>
+        </div>
+      )}
       {/* Banner Section */}
       <section className="w-full bg-white rounded-lg shadow-sm overflow-hidden flex h-64 md:h-80 items-center justify-center">
          <div className="text-center">
