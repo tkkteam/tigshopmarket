@@ -4,8 +4,8 @@ import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
-function getIpAddress() {
-  const headersList = headers();
+async function getIpAddress() {
+  const headersList = await headers();
   // Vercel / Next.js headers
   const forwardedFor = headersList.get('x-forwarded-for');
   if (forwardedFor) {
@@ -19,7 +19,7 @@ function getIpAddress() {
 }
 
 export async function toggleLike(productId: string, currentPath: string) {
-  const ipAddress = getIpAddress();
+  const ipAddress = await getIpAddress();
   if (ipAddress === 'unknown-ip') return { success: false, message: 'Cannot detect IP' };
 
   try {

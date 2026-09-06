@@ -6,7 +6,7 @@ import ProductClient from './ProductClient';
 
 export const dynamic = 'force-dynamic';
 
-function getIpAddress(headersList: any) {
+async function getIpAddress(headersList: any) {
   const forwardedFor = headersList.get('x-forwarded-for');
   if (forwardedFor) return forwardedFor.split(',')[0].trim();
   const realIp = headersList.get('x-real-ip');
@@ -31,8 +31,8 @@ export default async function ProductDetailPage(props: { params: Promise<{ id: s
     notFound();
   }
 
-  const headersList = headers();
-  const ipAddress = getIpAddress(headersList);
+  const headersList = await headers();
+  const ipAddress = await getIpAddress(headersList);
   
   const existingLike = await prisma.productLike.findUnique({
     where: {
