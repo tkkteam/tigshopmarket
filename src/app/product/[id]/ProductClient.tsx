@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ShoppingCart, Star, Share2, Heart, Plus, Minus } from 'lucide-react';
+import { Star, Share2, Heart, Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -109,13 +109,20 @@ export default function ProductClient({ product, initialIsLiked }: { product: an
         </div>
 
         <div className="flex gap-4 mt-8">
-          <button className="flex-1 max-w-[250px] flex items-center justify-center gap-2 bg-primary/10 text-primary border border-primary px-6 py-3 rounded-sm hover:bg-primary/20 transition-colors font-medium">
-            <ShoppingCart className="w-5 h-5" />
-            เพิ่มไปยังรถเข็น
-          </button>
-          <button className="flex-1 max-w-[250px] bg-primary text-white px-6 py-3 rounded-sm hover:bg-primary-hover transition-colors font-medium shadow-sm">
-            ซื้อสินค้า
-          </button>
+          {product.buyLink ? (
+            <Link 
+              href={product.buyLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex-1 max-w-[500px] flex justify-center items-center bg-primary text-white px-6 py-3 rounded-sm hover:bg-primary-hover transition-colors font-medium shadow-sm"
+            >
+              ซื้อสินค้า
+            </Link>
+          ) : (
+            <button disabled className="flex-1 max-w-[500px] bg-gray-300 text-gray-500 px-6 py-3 rounded-sm font-medium shadow-sm cursor-not-allowed">
+              สินค้าหมด / ยังไม่เปิดขาย
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-6 mt-8 pt-6 border-t border-gray-100 text-gray-600 text-sm">

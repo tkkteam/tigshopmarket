@@ -57,6 +57,11 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           </div>
 
           <div>
+            <label className="block text-sm font-medium mb-1">ลิงก์สำหรับสั่งซื้อ (URL ภายนอก เช่น Shopee, LINE)</label>
+            <input type="url" name="buyLink" defaultValue={product.buyLink || ''} className="w-full border rounded px-3 py-2" placeholder="https://..." />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium mb-1">หมวดหมู่</label>
             <select name="categoryId" defaultValue={product.categoryId} className="w-full border rounded px-3 py-2" required>
               <option value="">-- เลือกหมวดหมู่ --</option>

@@ -12,6 +12,7 @@ export async function addProduct(formData: FormData) {
     const price = parseFloat(formData.get('price') as string);
     const stock = parseInt(formData.get('stock') as string) || 0;
     const packageSize = formData.get('packageSize') as string;
+    const buyLink = formData.get('buyLink') as string;
     const categoryId = formData.get('categoryId') as string;
     const imageFile = formData.get('image') as File | null;
 
@@ -30,6 +31,7 @@ export async function addProduct(formData: FormData) {
         price,
         stock,
         packageSize: packageSize || '',
+        buyLink: buyLink || '',
         categoryId,
       },
     });
@@ -86,6 +88,7 @@ export async function updateProduct(formData: FormData) {
     const price = parseFloat(formData.get('price') as string);
     const stock = parseInt(formData.get('stock') as string) || 0;
     const packageSize = formData.get('packageSize') as string;
+    const buyLink = formData.get('buyLink') as string;
     const categoryId = formData.get('categoryId') as string;
     const imageFile = formData.get('image') as File | null;
 
@@ -101,6 +104,7 @@ export async function updateProduct(formData: FormData) {
         price,
         stock,
         packageSize: packageSize || '',
+        buyLink: buyLink || '',
         categoryId,
       },
     });
