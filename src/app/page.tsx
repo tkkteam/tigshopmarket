@@ -1,24 +1,27 @@
 import Link from 'next/link';
+import prisma from '@/lib/prisma';
+import Image from 'next/image';
 
-// Mock Data for UI Preview
-const categories = [
-  { id: 1, name: 'อุปกรณ์คอมพิวเตอร์', icon: '💻' },
-  { id: 2, name: 'โทรศัพท์มือถือ', icon: '📱' },
-  { id: 3, name: 'เครื่องใช้ไฟฟ้า', icon: '📺' },
-  { id: 4, name: 'แฟชั่น', icon: '👕' },
-  { id: 5, name: 'ของตกแต่งบ้าน', icon: '🏠' },
-  { id: 6, name: 'กล้อง', icon: '📷' },
-];
+export const revalidate = 60; // Revalidate every minute
 
-const mockProducts = Array.from({ length: 8 }).map((_, i) => ({
-  id: i + 1,
-  name: `สินค้าตัวอย่างที่ ${i + 1} - คุณภาพสูง ใช้งานได้ดีเยี่ยม เหมาะกับทุกคน`,
-  price: (Math.random() * 5000 + 100).toFixed(2),
-  sold: Math.floor(Math.random() * 500),
-  image: `https://picsum.photos/seed/${i + 1}/400/400`,
-}));
+export default async function Home() {
+  // Fetch real data from Neon database
+  const categories = await prisma.category.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 12,
+  });
 
-export default function Home() {
+  const products = await prisma.product.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 20,
+    include: {
+      images: {
+        orderBy: { sortOrder: 'asc' },
+        take: 1,
+      },
+    },
+  });
+
   return (
     <div className="space-y-8">
       {/* Banner Section */}
@@ -32,14 +35,18 @@ export default function Home() {
       {/* Categories Section */}
       <section className="bg-white p-4 rounded-lg shadow-sm">
         <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase">หมวดหมู่สินค้า</h2>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-          {categories.map((cat) => (
-            <Link key={cat.id} href={`/category/${cat.id}`} className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
-              <span className="text-4xl mb-2">{cat.icon}</span>
-              <span className="text-sm text-gray-700 text-center">{cat.name}</span>
-            </Link>
-          ))}
-        </div>
+        {categories.length > 0 ? (
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            {categories.map((cat) => (
+              <Link key={cat.id} href={`/category/${cat.id}`} className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
+                <span className="text-2xl mb-2">📁</span>
+                <span className="text-sm text-gray-700 text-center">{cat.name}</span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 text-center py-8">ยังไม่มีหมวดหมู่สินค้าในระบบ</p>
+        )}
       </section>
 
       {/* Featured Products */}
@@ -49,36 +56,48 @@ export default function Home() {
           <Link href="/products" className="text-sm text-gray-500 hover:text-primary">ดูทั้งหมด &gt;</Link>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
-          {mockProducts.map((product) => (
-            <Link key={product.id} href={`/product/${product.id}`} className="bg-white rounded-sm shadow-sm hover:-translate-y-1 hover:shadow-md transition-all group overflow-hidden">
-              <div className="relative aspect-square overflow-hidden bg-gray-100">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-3 flex flex-col gap-2">
-                <h3 className="text-sm text-gray-800 line-clamp-2 leading-tight">
-                  {product.name}
-                </h3>
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="text-primary font-semibold">฿{product.price}</span>
-                  <span className="text-xs text-gray-500">ขายแล้ว {product.sold} ชิ้น</span>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
+            {products.map((product) => (
+              <Link key={product.id} href={`/product/${product.id}`} className="bg-white rounded-sm shadow-sm hover:-translate-y-1 hover:shadow-md transition-all group overflow-hidden">
+                <div className="relative aspect-square overflow-hidden bg-gray-100 flex items-center justify-center">
+                  {product.images && product.images.length > 0 ? (
+                    <Image 
+                      src={product.images[0].imageUrl} 
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <span className="text-gray-400">ไม่มีรูปภาพ</span>
+                  )}
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                <div className="p-3 flex flex-col gap-2">
+                  <h3 className="text-sm text-gray-800 line-clamp-2 leading-tight">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="text-primary font-semibold">฿{product.price.toLocaleString()}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white p-8 text-center rounded-b-lg">
+            <p className="text-sm text-gray-500">ยังไม่มีสินค้าในระบบ</p>
+          </div>
+        )}
       </section>
 
       {/* Load More Button */}
-      <div className="flex justify-center mt-8">
-        <button className="bg-white border border-gray-300 text-gray-700 px-8 py-2 rounded-sm hover:bg-gray-50 transition-colors w-full max-w-sm">
-          โหลดสินค้าเพิ่มเติม
-        </button>
-      </div>
+      {products.length >= 20 && (
+        <div className="flex justify-center mt-8">
+          <button className="bg-white border border-gray-300 text-gray-700 px-8 py-2 rounded-sm hover:bg-gray-50 transition-colors w-full max-w-sm">
+            โหลดสินค้าเพิ่มเติม
+          </button>
+        </div>
+      )}
     </div>
   );
 }
