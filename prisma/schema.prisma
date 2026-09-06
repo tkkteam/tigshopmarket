@@ -35,10 +35,22 @@ model Product {
   categoryId  String        
   category    Category       @relation(fields: [categoryId], references: [id])
   packageSize String?        // ขนาดพัสดุ
+  likesCount  Int            @default(0)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   images      ProductImage[]
   orderItems  OrderItem[]
+  likes       ProductLike[]
+}
+
+model ProductLike {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ipAddress String
+  createdAt DateTime @default(now())
+
+  @@unique([productId, ipAddress])
 }
 
 model ProductImage {

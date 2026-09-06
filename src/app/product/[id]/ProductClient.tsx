@@ -3,14 +3,19 @@
 import { useState } from 'react';
 import { ShoppingCart, Star, Share2, Heart, Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
-export default function ProductClient({ product }: { product: any }) {
+import { toggleLike } from '@/actions/like';
+import { useTransition } from 'react';
+
+export default function ProductClient({ product, initialIsLiked }: { product: any, initialIsLiked: boolean }) {
   const images = product.images?.length > 0 
     ? product.images.map((img: any) => img.imageUrl) 
     : ['https://via.placeholder.com/800?text=No+Image'];
 
   const [selectedImage, setSelectedImage] = useState(images[0]);
   const [quantity, setQuantity] = useState(1);
+  const [isPending, startTransition] = useTransition();
 
   const increaseQuantity = () => {
     if (quantity < product.stock) setQuantity(prev => prev + 1);
@@ -18,6 +23,12 @@ export default function ProductClient({ product }: { product: any }) {
 
   const decreaseQuantity = () => {
     if (quantity > 1) setQuantity(prev => prev - 1);
+  };
+
+  const handleLike = () => {
+    startTransition(async () => {
+      await toggleLike(product.id, `/product/${product.id}`);
+    });
   };
 
   return (
@@ -76,7 +87,9 @@ export default function ProductClient({ product }: { product: any }) {
           
           <div className="flex items-center gap-4">
             <span className="text-gray-500 w-24">หมวดหมู่</span>
-            <span className="text-gray-800">{product.category?.name}</span>
+            <Link href={`/category/${product.categoryId}`} className="text-primary hover:underline">
+              {product.category?.name}
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -110,9 +123,13 @@ export default function ProductClient({ product }: { product: any }) {
             <Share2 className="w-5 h-5" />
             แชร์
           </button>
-          <button className="flex items-center gap-2 hover:text-primary transition-colors">
-            <Heart className="w-5 h-5" />
-            ถูกใจ
+          <button 
+            onClick={handleLike} 
+            disabled={isPending}
+            className={`flex items-center gap-2 transition-colors ${initialIsLiked ? 'text-pink-500 hover:text-pink-600' : 'hover:text-pink-500'}`}
+          >
+            <Heart className={`w-5 h-5 ${initialIsLiked ? 'fill-pink-500' : ''}`} />
+            {initialIsLiked ? 'ถูกใจแล้ว' : 'ถูกใจ'} ({product.likesCount || 0})
           </button>
         </div>
       </div>

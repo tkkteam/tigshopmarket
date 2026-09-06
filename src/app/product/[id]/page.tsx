@@ -1,9 +1,18 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import ProductClient from './ProductClient';
 
 export const dynamic = 'force-dynamic';
+
+function getIpAddress(headersList: any) {
+  const forwardedFor = headersList.get('x-forwarded-for');
+  if (forwardedFor) return forwardedFor.split(',')[0].trim();
+  const realIp = headersList.get('x-real-ip');
+  if (realIp) return realIp;
+  return 'unknown-ip';
+}
 
 export default async function ProductDetailPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
@@ -21,6 +30,20 @@ export default async function ProductDetailPage(props: { params: Promise<{ id: s
   if (!product) {
     notFound();
   }
+
+  const headersList = headers();
+  const ipAddress = getIpAddress(headersList);
+  
+  const existingLike = await prisma.productLike.findUnique({
+    where: {
+      productId_ipAddress: {
+        productId: id,
+        ipAddress
+      }
+    }
+  });
+
+  const isLiked = !!existingLike;
 
   // Fetch some related products in same category (up to 5)
   const relatedProducts = await prisma.product.findMany({
@@ -40,13 +63,13 @@ export default async function ProductDetailPage(props: { params: Promise<{ id: s
       <div className="text-sm text-gray-500 py-2">
         <Link href="/" className="hover:text-primary">หน้าแรก</Link>
         <span className="mx-2">&gt;</span>
-        <span className="text-gray-800">{product.category.name}</span>
+        <Link href={`/category/${product.categoryId}`} className="hover:text-primary">{product.category.name}</Link>
         <span className="mx-2">&gt;</span>
         <span className="text-gray-800">{product.name}</span>
       </div>
 
       {/* Product Main Section (Client Component for interactivity) */}
-      <ProductClient product={product} />
+      <ProductClient product={product} initialIsLiked={isLiked} />
 
       {/* Description Section */}
       <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
