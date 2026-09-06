@@ -2,7 +2,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import Image from 'next/image';
 
-export const revalidate = 60; // Revalidate every minute
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   // Fetch real data from Neon database
