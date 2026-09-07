@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 
-import { Facebook } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 
@@ -34,8 +33,8 @@ export default async function RootLayout({
               <span className="text-gray-600 font-medium">ติดตามเราบน:</span>
               <div className="flex items-center gap-3">
                 {setting?.facebook && (
-                  <Link href={setting.facebook} target="_blank" className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition">
-                    <Facebook className="w-5 h-5" />
+                  <Link href={setting.facebook} target="_blank" className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition font-bold text-sm">
+                    FB
                   </Link>
                 )}
                 {setting?.lineId && (
