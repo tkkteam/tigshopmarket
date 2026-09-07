@@ -77,16 +77,21 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">รูปภาพสินค้า (อัปโหลดใหม่เพื่อเปลี่ยน)</label>
+            <label className="block text-sm font-medium mb-1">รูปภาพสินค้า (อัปโหลดใหม่เพื่อเปลี่ยนทั้งหมด สูงสุด 6 ภาพ)</label>
             {product.images.length > 0 && (
               <div className="mb-3">
                 <p className="text-xs text-gray-500 mb-1">รูปปัจจุบัน:</p>
-                <div className="relative w-24 h-24 bg-gray-100 rounded overflow-hidden">
-                  <Image src={product.images[0].imageUrl} alt={product.name} fill className="object-cover" />
+                <div className="flex gap-2 flex-wrap">
+                  {product.images.map((img) => (
+                    <div key={img.id} className="relative w-20 h-20 bg-gray-100 rounded overflow-hidden border">
+                      <Image src={img.imageUrl} alt={product.name} fill className="object-cover" />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
-            <input type="file" name="image" accept="image/*" className="w-full border rounded px-3 py-2" />
+            <input type="file" name="images" accept="image/*" multiple max="6" className="w-full border rounded px-3 py-2" />
+            <p className="text-xs text-gray-500 mt-1">หากอัปโหลดรูปใหม่ รูปเก่าทั้งหมดจะถูกลบออก (เลือกได้สูงสุด 6 ภาพ)</p>
           </div>
 
           <div className="pt-4">

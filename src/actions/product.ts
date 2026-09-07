@@ -14,7 +14,7 @@ export async function addProduct(formData: FormData) {
     const packageSize = formData.get('packageSize') as string;
     const buyLink = formData.get('buyLink') as string;
     const categoryId = formData.get('categoryId') as string;
-    const imageFile = formData.get('image') as File | null;
+    const imageFiles = formData.getAll('images') as File[];
 
     if (!name || !price || !categoryId) {
       throw new Error('Missing required fields');
@@ -36,16 +36,20 @@ export async function addProduct(formData: FormData) {
       },
     });
 
-    if (imageFile && imageFile.size > 0) {
-      const { fileId, imageUrl } = await uploadImageToR2(imageFile);
-      await prisma.productImage.create({
-        data: {
-          productId: product.id,
-          imageUrl,
-          fileId,
-          sortOrder: 0,
-        },
-      });
+    if (imageFiles && imageFiles.length > 0) {
+      const filesToUpload = imageFiles.filter(f => f.size > 0).slice(0, 6);
+      let sortOrder = 0;
+      for (const file of filesToUpload) {
+        const { fileId, imageUrl } = await uploadImageToR2(file);
+        await prisma.productImage.create({
+          data: {
+            productId: product.id,
+            imageUrl,
+            fileId,
+            sortOrder: sortOrder++,
+          },
+        });
+      }
     }
   } catch (error: any) {
     console.error("Action Error:", error);
@@ -95,7 +99,7 @@ export async function updateProduct(formData: FormData) {
     const packageSize = formData.get('packageSize') as string;
     const buyLink = formData.get('buyLink') as string;
     const categoryId = formData.get('categoryId') as string;
-    const imageFile = formData.get('image') as File | null;
+    const imageFiles = formData.getAll('images') as File[];
 
     if (!id || !name || !price || !categoryId) {
       throw new Error('Missing required fields');
@@ -114,22 +118,28 @@ export async function updateProduct(formData: FormData) {
       },
     });
 
-    if (imageFile && imageFile.size > 0) {
-      const { fileId, imageUrl } = await uploadImageToR2(imageFile);
-      
-      // Delete old images first (for simplicity, we keep 1 image per product)
-      await prisma.productImage.deleteMany({
-        where: { productId: id },
-      });
+    if (imageFiles && imageFiles.length > 0) {
+      const validFiles = imageFiles.filter(f => f.size > 0);
+      if (validFiles.length > 0) {
+        // Delete old images
+        await prisma.productImage.deleteMany({
+          where: { productId: id },
+        });
 
-      await prisma.productImage.create({
-        data: {
-          productId: id,
-          imageUrl,
-          fileId,
-          sortOrder: 0,
-        },
-      });
+        let sortOrder = 0;
+        for (const file of validFiles.slice(0, 6)) {
+          const { fileId, imageUrl } = await uploadImageToR2(file);
+          
+          await prisma.productImage.create({
+            data: {
+              productId: id,
+              imageUrl,
+              fileId,
+              sortOrder: sortOrder++,
+            },
+          });
+        }
+      }
     }
   } catch (error: any) {
     console.error("Update Error:", error);

@@ -76,8 +76,9 @@ export default async function NewProductPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">รูปภาพสินค้า</label>
-            <input type="file" name="image" accept="image/*" className="w-full border rounded px-3 py-2" />
+            <label className="block text-sm font-medium mb-1">รูปภาพสินค้า (สูงสุด 6 ภาพ)</label>
+            <input type="file" name="images" accept="image/*" multiple max="6" className="w-full border rounded px-3 py-2" />
+            <p className="text-xs text-gray-500 mt-1">สามารถเลือกได้หลายไฟล์พร้อมกัน</p>
           </div>
 
           <div className="pt-4">
