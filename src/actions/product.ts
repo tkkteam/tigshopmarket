@@ -86,6 +86,7 @@ export async function deleteProduct(productId: string) {
 export async function addCategory(formData: FormData) {
   const name = formData.get('name') as string;
   const image = formData.get('image') as File | null;
+  const imagePath = formData.get('imagePath') as string | null;
   
   if (!name) throw new Error('Category name is required');
 
@@ -99,12 +100,15 @@ export async function addCategory(formData: FormData) {
   if (image && image.size > 0) {
     const uploaded = await uploadImageToR2(image);
     imageUrl = uploaded.imageUrl;
+  } else if (imagePath) {
+    imageUrl = imagePath;
   }
   
   await prisma.category.create({
     data: { name, slug, imageUrl }
   });
   revalidatePath('/admin/products/new');
+  revalidatePath('/admin/categories');
   revalidatePath('/');
 }
 
@@ -112,6 +116,7 @@ export async function updateCategory(formData: FormData) {
   const id = formData.get('id') as string;
   const name = formData.get('name') as string;
   const image = formData.get('image') as File | null;
+  const imagePath = formData.get('imagePath') as string | null;
 
   if (!id || !name) throw new Error('Category ID and name are required');
 
@@ -120,6 +125,8 @@ export async function updateCategory(formData: FormData) {
   if (image && image.size > 0) {
     const uploaded = await uploadImageToR2(image);
     updateData.imageUrl = uploaded.imageUrl;
+  } else if (imagePath) {
+    updateData.imageUrl = imagePath;
   }
 
   await prisma.category.update({
@@ -128,8 +135,18 @@ export async function updateCategory(formData: FormData) {
   });
 
   revalidatePath('/admin/products/new');
+  revalidatePath('/admin/categories');
   revalidatePath('/admin/products/[id]/edit');
   revalidatePath('/');
+}
+
+export async function getShopeeCategories() {
+  const fs = await import('fs');
+  const path = await import('path');
+  const dir = path.join(process.cwd(), 'public', 'shopee_categories');
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir);
+  return files.filter(f => f.endsWith('.png') || f.endsWith('.jpg')).map(f => `/shopee_categories/${f}`);
 }
 
 export async function updateProduct(formData: FormData) {
