@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 
-import { Facebook, Youtube, MessageCircle } from 'lucide-react';
+import { Facebook } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 
@@ -44,8 +44,8 @@ export default async function RootLayout({
                   </Link>
                 )}
                 {setting?.youtube && (
-                  <Link href={setting.youtube} target="_blank" className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition">
-                    <Youtube className="w-5 h-5" />
+                  <Link href={setting.youtube} target="_blank" className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition font-bold text-sm">
+                    YT
                   </Link>
                 )}
               </div>
