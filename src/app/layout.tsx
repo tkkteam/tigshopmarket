@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'TigShop - Modern Marketplace',
+  title: 'TIG CENTER - Service Marketplace',
   description: 'ซื้อขายสินค้าออนไลน์ครบวงจร',
 };
 
@@ -29,7 +29,7 @@ export default async function RootLayout({
         
         <footer className="bg-white border-t py-8 mt-auto">
           <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">© {new Date().getFullYear()} TigShop Market. All rights reserved.</p>
+            <p className="text-gray-500 text-sm">© {new Date().getFullYear()} TIG CENTER. All rights reserved.</p>
             
             <div className="flex items-center gap-4">
               <span className="text-gray-600 font-medium">ติดตามเราบน:</span>

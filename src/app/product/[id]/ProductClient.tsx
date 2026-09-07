@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from 'react';
-import { Star, Share2, Heart } from 'lucide-react';
+import { Star, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -108,10 +108,7 @@ export default function ProductClient({ product, initialIsLiked }: { product: an
         </div>
 
         <div className="flex items-center gap-6 mt-8 pt-6 border-t border-gray-100 text-gray-600 text-sm">
-          <button className="flex items-center gap-2 hover:text-primary transition-colors">
-            <Share2 className="w-5 h-5" />
-            แชร์
-          </button>
+
           <button 
             onClick={handleLike} 
             disabled={isPending}
