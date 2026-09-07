@@ -22,13 +22,12 @@ export default async function NewProductPage() {
 
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-lg font-bold mb-4 border-b pb-2">เพิ่มหมวดหมู่ใหม่</h2>
-        <ClientForm action={async (formData) => {
-          'use server';
-          const name = formData.get('name') as string;
-          if (name) await addCategory(name);
-        }} className="flex gap-2" successMessage="เพิ่มหมวดหมู่สำเร็จ!">
-          <input type="text" name="name" placeholder="ชื่อหมวดหมู่ใหม่" className="border rounded px-3 py-2 flex-1" required />
-          <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">เพิ่มหมวดหมู่</button>
+        <ClientForm action={addCategory} className="flex flex-col gap-3" successMessage="เพิ่มหมวดหมู่สำเร็จ!">
+          <div className="flex gap-2">
+            <input type="text" name="name" placeholder="ชื่อหมวดหมู่ใหม่" className="border rounded px-3 py-2 flex-1" required />
+            <input type="file" name="image" accept="image/*" className="border rounded px-3 py-1.5 text-sm file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
+            <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 whitespace-nowrap">เพิ่มหมวดหมู่</button>
+          </div>
         </ClientForm>
       </div>
 

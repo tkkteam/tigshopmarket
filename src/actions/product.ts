@@ -83,17 +83,52 @@ export async function deleteProduct(productId: string) {
   revalidatePath('/');
 }
 
-export async function addCategory(name: string) {
+export async function addCategory(formData: FormData) {
+  const name = formData.get('name') as string;
+  const image = formData.get('image') as File | null;
+  
+  if (!name) throw new Error('Category name is required');
+
   let slug = name.toLowerCase().replace(/[^a-z0-9ก-๙]+/g, '-');
   if (!slug || slug === '-') {
     slug = 'category';
   }
   slug = `${slug}-${Date.now()}`;
   
+  let imageUrl = null;
+  if (image && image.size > 0) {
+    const uploaded = await uploadImageToR2(image);
+    imageUrl = uploaded.imageUrl;
+  }
+  
   await prisma.category.create({
-    data: { name, slug }
+    data: { name, slug, imageUrl }
   });
   revalidatePath('/admin/products/new');
+  revalidatePath('/');
+}
+
+export async function updateCategory(formData: FormData) {
+  const id = formData.get('id') as string;
+  const name = formData.get('name') as string;
+  const image = formData.get('image') as File | null;
+
+  if (!id || !name) throw new Error('Category ID and name are required');
+
+  const updateData: any = { name };
+  
+  if (image && image.size > 0) {
+    const uploaded = await uploadImageToR2(image);
+    updateData.imageUrl = uploaded.imageUrl;
+  }
+
+  await prisma.category.update({
+    where: { id },
+    data: updateData
+  });
+
+  revalidatePath('/admin/products/new');
+  revalidatePath('/admin/products/[id]/edit');
   revalidatePath('/');
 }
 

@@ -5,7 +5,7 @@ import Image from 'next/image';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  let categories: { id: string; name: string; products?: { images: { imageUrl: string }[] }[] }[] = [];
+  let categories: { id: string; name: string; imageUrl: string | null; products?: { images: { imageUrl: string }[] }[] }[] = [];
   let products: { id: string; name: string; price: number; images?: { imageUrl: string }[] }[] = [];
   let errorMsg = "";
 
@@ -63,7 +63,7 @@ export default async function Home() {
         {categories.length > 0 ? (
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
             {categories.map((cat) => {
-              const catImage = cat.products?.[0]?.images?.[0]?.imageUrl;
+              const catImage = cat.imageUrl || cat.products?.[0]?.images?.[0]?.imageUrl;
               return (
               <Link key={cat.id} href={`/category/${cat.id}`} className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow group">
                 {catImage ? (
