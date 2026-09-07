@@ -51,9 +51,9 @@ export async function addProduct(formData: FormData) {
         });
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Action Error:", error);
-    throw new Error("Failed to save product: " + error.message);
+    throw new Error("Failed to save product: " + (error instanceof Error ? error.message : String(error)));
   }
 
   revalidatePath('/admin/products');
@@ -141,9 +141,9 @@ export async function updateProduct(formData: FormData) {
         }
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Update Error:", error);
-    throw new Error("Failed to update product: " + error.message);
+    throw new Error("Failed to update product: " + (error instanceof Error ? error.message : String(error)));
   }
 
   revalidatePath('/admin/products');

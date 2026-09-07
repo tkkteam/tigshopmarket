@@ -37,6 +37,35 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         <h1 className="text-2xl font-bold text-gray-800">แก้ไขสินค้า: {product.name}</h1>
       </div>
 
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-bold mb-4">รูปปัจจุบัน ({product.images.length}/9)</h2>
+        {product.images.length > 0 ? (
+          <div className="flex gap-2 flex-wrap">
+            {product.images.map((img, index) => (
+              <div key={img.id} className="relative w-24 h-24 bg-gray-100 rounded overflow-hidden border group">
+                <Image src={img.imageUrl} alt={product.name} fill className="object-cover" />
+                {index === 0 ? (
+                  <div className="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-br z-10 font-medium">ภาพหลัก</div>
+                ) : (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                    <form action={async () => {
+                      'use server';
+                      await setMainImage(product.id, img.id);
+                    }}>
+                      <button type="submit" className="text-white text-[10px] bg-gray-900/80 hover:bg-gray-900 px-2 py-1 rounded border border-gray-600">
+                        ตั้งเป็นภาพหลัก
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">ไม่มีรูปภาพ</p>
+        )}
+      </div>
+
       <div className="bg-white rounded-lg shadow-sm p-6">
         <form action={updateProduct} className="space-y-4">
           <input type="hidden" name="id" value={product.id} />
@@ -82,33 +111,6 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           </div>
 
           <div className="border-t pt-4 mt-4">
-            <label className="block text-sm font-medium mb-1">รูปปัจจุบัน ({product.images.length}/9)</label>
-            {product.images.length > 0 && (
-              <div className="mb-4">
-                <div className="flex gap-2 flex-wrap">
-                  {product.images.map((img, index) => (
-                    <div key={img.id} className="relative w-24 h-24 bg-gray-100 rounded overflow-hidden border group">
-                      <Image src={img.imageUrl} alt={product.name} fill className="object-cover" />
-                      {index === 0 ? (
-                        <div className="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-br z-10 font-medium">ภาพหลัก</div>
-                      ) : (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                          <form action={async () => {
-                            'use server';
-                            await setMainImage(product.id, img.id);
-                          }}>
-                            <button type="submit" className="text-white text-[10px] bg-gray-900/80 hover:bg-gray-900 px-2 py-1 rounded border border-gray-600">
-                              ตั้งเป็นภาพหลัก
-                            </button>
-                          </form>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
             <ImageUploadBox maxImages={9} existingImagesCount={product.images.length} />
           </div>
 

@@ -1,5 +1,4 @@
 import { getSettings, updateSettings } from '@/actions/setting';
-import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 

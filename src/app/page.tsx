@@ -5,8 +5,8 @@ import Image from 'next/image';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  let categories: any[] = [];
-  let products: any[] = [];
+  let categories: { id: string; name: string; products?: { images: { imageUrl: string }[] }[] }[] = [];
+  let products: { id: string; name: string; price: number; images?: { imageUrl: string }[] }[] = [];
   let errorMsg = "";
 
   try {
@@ -33,8 +33,12 @@ export default async function Home() {
         },
       },
     });
-  } catch (e: any) {
-    errorMsg = JSON.stringify(e, Object.getOwnPropertyNames(e));
+  } catch (e: unknown) {
+    if (e && typeof e === 'object') {
+      errorMsg = JSON.stringify(e, Object.getOwnPropertyNames(e));
+    } else {
+      errorMsg = String(e);
+    }
   }
 
   return (
