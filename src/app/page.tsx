@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import Image from 'next/image';
+import BannerSlider from '@/components/BannerSlider';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,6 +11,19 @@ export default async function Home() {
   let categories: { id: string; name: string; imageUrl: string | null; products?: { images: { imageUrl: string }[] }[] }[] = [];
   let products: { id: string; name: string; price: number; images?: { imageUrl: string }[] }[] = [];
   let errorMsg = "";
+  let bannerImages: string[] = [];
+
+  try {
+    const bannerDir = path.join(process.cwd(), 'public', 'Banner');
+    if (fs.existsSync(bannerDir)) {
+      const files = fs.readdirSync(bannerDir);
+      bannerImages = files
+        .filter(f => f.match(/\.(png|jpe?g|webp|gif)$/i))
+        .map(f => `/Banner/${f}`);
+    }
+  } catch (e) {
+    console.error("Error reading banner images:", e);
+  }
 
   try {
     categories = await prisma.category.findMany({
@@ -50,11 +66,8 @@ export default async function Home() {
         </div>
       )}
       {/* Banner Section */}
-      <section className="w-full bg-white rounded-lg shadow-sm overflow-hidden flex h-64 md:h-80 items-center justify-center">
-         <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-400">[ Banner Slider Area ]</h2>
-            <p className="text-gray-400 mt-2">พื้นที่สำหรับใส่รูปแบนเนอร์โปรโมชั่น</p>
-         </div>
+      <section className="w-full bg-white rounded-lg shadow-sm overflow-hidden flex h-64 md:h-80 items-center justify-center relative">
+         <BannerSlider images={bannerImages} />
       </section>
 
       {/* Categories Section */}
