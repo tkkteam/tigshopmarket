@@ -9,7 +9,7 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold tracking-tight">
-          TigShop
+          TIG CENTER
         </Link>
         
         {/* Search Bar - Desktop */}

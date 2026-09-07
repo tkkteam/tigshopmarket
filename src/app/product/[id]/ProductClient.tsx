@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from 'react';
-import { Star, Share2, Heart, Plus, Minus } from 'lucide-react';
+import { Star, Share2, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -15,16 +15,7 @@ export default function ProductClient({ product, initialIsLiked }: { product: an
     : ['https://via.placeholder.com/800?text=No+Image'];
 
   const [selectedImage, setSelectedImage] = useState(images[0]);
-  const [quantity, setQuantity] = useState(1);
   const [isPending, startTransition] = useTransition();
-
-  const increaseQuantity = () => {
-    if (quantity < product.stock) setQuantity(prev => prev + 1);
-  };
-
-  const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity(prev => prev - 1);
-  };
 
   const handleLike = () => {
     startTransition(async () => {
@@ -95,17 +86,7 @@ export default function ProductClient({ product, initialIsLiked }: { product: an
 
           <div className="flex items-center gap-4">
             <span className="text-gray-500 w-24">จำนวน</span>
-            <div className="flex items-center border border-gray-300 rounded-sm">
-              <button onClick={decreaseQuantity} className="p-2 text-gray-600 hover:bg-gray-100"><Minus className="w-4 h-4" /></button>
-              <input 
-                type="text" 
-                value={quantity} 
-                readOnly 
-                className="w-12 text-center border-l border-r border-gray-300 h-full py-1 text-gray-800 outline-none"
-              />
-              <button onClick={increaseQuantity} className="p-2 text-gray-600 hover:bg-gray-100"><Plus className="w-4 h-4" /></button>
-            </div>
-            <span className="text-sm text-gray-500">มีสินค้าทั้งหมด {product.stock} ชิ้น</span>
+            <span className="text-gray-800 font-medium">มีสินค้าทั้งหมด {product.stock} ชิ้น</span>
           </div>
         </div>
 
