@@ -55,6 +55,10 @@ export default function ImageUploadBox({ existingImagesCount = 0, maxImages = 9 
         <div className="w-4 h-4 border border-gray-300 bg-white"></div>
         <p>รูปภาพขนาด 3:4 ดึงดูดผู้ซื้อด้วยรูปภาพขนาด 3:4 สำหรับสินค้าแฟชั่นของคุณ <a href="#" className="text-blue-500 hover:underline">ดูวิธีใช้งาน</a></p>
       </div>
+      
+      {existingImagesCount > 0 && (
+        <p className="text-xs text-gray-500 mt-3">ระบบจะอัปโหลดรูปภาพต่อท้ายรูปภาพเดิมที่มีอยู่ (คุณสามารถลบรูปเดิมได้ด้านบน)</p>
+      )}
     </div>
   );
 }

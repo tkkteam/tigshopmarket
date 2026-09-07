@@ -1,9 +1,10 @@
 import prisma from '@/lib/prisma';
-import { updateProduct, setMainImage } from '@/actions/product';
+import { updateProduct, setMainImage, deleteProductImage } from '@/actions/product';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import ImageUploadBox from '@/components/ImageUploadBox';
+import { Trash2 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,20 +45,33 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
             {product.images.map((img, index) => (
               <div key={img.id} className="relative w-24 h-24 bg-gray-100 rounded overflow-hidden border group">
                 <Image src={img.imageUrl} alt={product.name} fill className="object-cover" />
+                
                 {index === 0 ? (
-                  <div className="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-br z-10 font-medium">ภาพหลัก</div>
+                  <div className="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-br z-10 font-medium shadow-sm">ภาพหลัก</div>
                 ) : (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                  <div className="absolute top-0 left-0 w-full p-1 opacity-0 group-hover:opacity-100 transition-opacity flex justify-between items-start z-20">
                     <form action={async () => {
                       'use server';
                       await setMainImage(product.id, img.id);
                     }}>
-                      <button type="submit" className="text-white text-[10px] bg-gray-900/80 hover:bg-gray-900 px-2 py-1 rounded border border-gray-600">
+                      <button type="submit" className="text-white text-[10px] bg-black/60 hover:bg-black px-1.5 py-0.5 rounded shadow-sm">
                         ตั้งเป็นภาพหลัก
                       </button>
                     </form>
                   </div>
                 )}
+                
+                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                  <form action={async () => {
+                    'use server';
+                    await deleteProductImage(product.id, img.id);
+                  }}>
+                    <button type="submit" className="text-white bg-red-500/80 hover:bg-red-600 p-1 rounded shadow-sm">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </form>
+                </div>
+                
               </div>
             ))}
           </div>

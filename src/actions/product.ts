@@ -121,23 +121,34 @@ export async function updateProduct(formData: FormData) {
     if (imageFiles && imageFiles.length > 0) {
       const validFiles = imageFiles.filter(f => f.size > 0);
       if (validFiles.length > 0) {
-        // Delete old images
-        await prisma.productImage.deleteMany({
-          where: { productId: id },
+        // Count existing images to not exceed 9
+        const existingImagesCount = await prisma.productImage.count({
+          where: { productId: id }
         });
 
-        let sortOrder = 0;
-        for (const file of validFiles.slice(0, 9)) {
-          const { fileId, imageUrl } = await uploadImageToR2(file);
-          
-          await prisma.productImage.create({
-            data: {
-              productId: id,
-              imageUrl,
-              fileId,
-              sortOrder: sortOrder++,
-            },
+        const availableSlots = Math.max(0, 9 - existingImagesCount);
+        const filesToUpload = validFiles.slice(0, availableSlots);
+
+        if (filesToUpload.length > 0) {
+          // Get max sort order
+          const maxSortImage = await prisma.productImage.findFirst({
+            where: { productId: id },
+            orderBy: { sortOrder: 'desc' }
           });
+          let sortOrder = maxSortImage ? maxSortImage.sortOrder + 1 : 0;
+
+          for (const file of filesToUpload) {
+            const { fileId, imageUrl } = await uploadImageToR2(file);
+            
+            await prisma.productImage.create({
+              data: {
+                productId: id,
+                imageUrl,
+                fileId,
+                sortOrder: sortOrder++,
+              },
+            });
+          }
         }
       }
     }
@@ -183,6 +194,15 @@ export async function setMainImage(productId: string, imageId: string) {
       data: { sortOrder: i }
     });
   }
+
+  revalidatePath('/admin/products');
+  revalidatePath(`/admin/products/${productId}/edit`);
+  revalidatePath('/');
+}
+export async function deleteProductImage(productId: string, imageId: string) {
+  await prisma.productImage.delete({
+    where: { id: imageId }
+  });
 
   revalidatePath('/admin/products');
   revalidatePath(`/admin/products/${productId}/edit`);
