@@ -36,6 +36,10 @@ model Product {
   category    Category       @relation(fields: [categoryId], references: [id])
   packageSize String?        // ขนาดพัสดุ
   buyLink     String?        // ลิงก์สั่งซื้อ
+  brand       String?        @default("No Brand") // แบรนด์
+  weight      String?        // น้ำหนัก
+  warranty    String?        @default("ไม่มีประกัน") // ระยะเวลาการรับประกัน
+  condition   String?        @default("ของใหม่") // สภาพสินค้า
   likesCount  Int            @default(0)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt

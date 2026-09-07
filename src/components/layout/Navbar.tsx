@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { User } from 'lucide-react';
+// no lucide-react imports
 import SearchBox from '@/components/SearchBox';
 
 export default function Navbar() {

@@ -14,6 +14,10 @@ export async function addProduct(formData: FormData) {
     const packageSize = formData.get('packageSize') as string;
     const buyLink = formData.get('buyLink') as string;
     const categoryId = formData.get('categoryId') as string;
+    const brand = formData.get('brand') as string;
+    const weight = formData.get('weight') as string;
+    const warranty = formData.get('warranty') as string;
+    const condition = formData.get('condition') as string;
     const imageFiles = formData.getAll('images') as File[];
 
     if (!name || !price || !categoryId) {
@@ -33,6 +37,10 @@ export async function addProduct(formData: FormData) {
         packageSize: packageSize || '',
         buyLink: buyLink || '',
         categoryId,
+        brand: brand || 'No Brand',
+        weight: weight || '',
+        warranty: warranty || 'ไม่มีประกัน',
+        condition: condition || 'ของใหม่',
       },
     });
 
@@ -99,6 +107,10 @@ export async function updateProduct(formData: FormData) {
     const packageSize = formData.get('packageSize') as string;
     const buyLink = formData.get('buyLink') as string;
     const categoryId = formData.get('categoryId') as string;
+    const brand = formData.get('brand') as string;
+    const weight = formData.get('weight') as string;
+    const warranty = formData.get('warranty') as string;
+    const condition = formData.get('condition') as string;
     const imageFiles = formData.getAll('images') as File[];
 
     if (!id || !name || !price || !categoryId) {
@@ -115,6 +127,10 @@ export async function updateProduct(formData: FormData) {
         packageSize: packageSize || '',
         buyLink: buyLink || '',
         categoryId,
+        brand: brand || 'No Brand',
+        weight: weight || '',
+        warranty: warranty || 'ไม่มีประกัน',
+        condition: condition || 'ของใหม่',
       },
     });
 

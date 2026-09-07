@@ -1,12 +1,13 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import ProductClient from './ProductClient';
 
 export const dynamic = 'force-dynamic';
 
-async function getIpAddress(headersList: any) {
+async function getIpAddress(headersList: Headers) {
   const forwardedFor = headersList.get('x-forwarded-for');
   if (forwardedFor) return forwardedFor.split(',')[0].trim();
   const realIp = headersList.get('x-real-ip');
@@ -71,8 +72,50 @@ export default async function ProductDetailPage(props: { params: Promise<{ id: s
       {/* Product Main Section (Client Component for interactivity) */}
       <ProductClient product={product} initialIsLiked={isLiked} />
 
-      {/* Description Section */}
+      {/* Attributes & Description Section */}
       <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+        <div className="bg-gray-50 p-3 rounded-sm mb-4 border border-gray-100">
+          <h2 className="text-lg font-medium text-gray-800 uppercase">ข้อมูลจำเพาะของสินค้า</h2>
+        </div>
+        <div className="px-4 mb-8">
+          <table className="w-full max-w-2xl text-sm">
+            <tbody>
+              <tr className="border-b border-gray-100">
+                <td className="py-3 text-gray-500 w-1/3">หมวดหมู่</td>
+                <td className="py-3 text-gray-800"><Link href={`/category/${product.categoryId}`} className="text-blue-600 hover:underline">{product.category.name}</Link></td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-3 text-gray-500">แบรนด์</td>
+                <td className="py-3 text-gray-800">{product.brand || 'No Brand'}</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-3 text-gray-500">สภาพสินค้า</td>
+                <td className="py-3 text-gray-800">{product.condition || 'ของใหม่'}</td>
+              </tr>
+              {product.weight && (
+              <tr className="border-b border-gray-100">
+                <td className="py-3 text-gray-500">น้ำหนัก</td>
+                <td className="py-3 text-gray-800">{product.weight}</td>
+              </tr>
+              )}
+              {product.packageSize && (
+              <tr className="border-b border-gray-100">
+                <td className="py-3 text-gray-500">ขนาดพัสดุ</td>
+                <td className="py-3 text-gray-800">{product.packageSize}</td>
+              </tr>
+              )}
+              <tr className="border-b border-gray-100">
+                <td className="py-3 text-gray-500">การรับประกัน</td>
+                <td className="py-3 text-gray-800">{product.warranty || 'ไม่มีประกัน'}</td>
+              </tr>
+              <tr>
+                <td className="py-3 text-gray-500">จำนวนสต็อก</td>
+                <td className="py-3 text-gray-800">{product.stock} ชิ้น</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <div className="bg-gray-50 p-3 rounded-sm mb-4 border border-gray-100">
           <h2 className="text-lg font-medium text-gray-800 uppercase">รายละเอียดสินค้า</h2>
         </div>
@@ -89,10 +132,11 @@ export default async function ProductDetailPage(props: { params: Promise<{ id: s
             {relatedProducts.map((relProduct) => (
               <Link key={relProduct.id} href={`/product/${relProduct.id}`} className="bg-white rounded-sm shadow-sm hover:-translate-y-1 hover:shadow-md transition-all group overflow-hidden border border-transparent hover:border-primary">
                 <div className="relative aspect-square overflow-hidden bg-gray-100">
-                  <img 
+                  <Image 
                     src={relProduct.images[0]?.imageUrl || 'https://via.placeholder.com/400?text=No+Image'} 
                     alt={relProduct.name}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-3 flex flex-col gap-2">

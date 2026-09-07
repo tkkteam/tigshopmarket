@@ -2,6 +2,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import Image from 'next/image';
 import { deleteProduct, clearMockData } from '@/actions/product';
+import ClientForm from '@/components/ClientForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,11 +22,11 @@ export default async function ProductsAdminPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">จัดการสินค้า</h1>
         <div className="flex gap-2">
-          <form action={clearMockData}>
+          <ClientForm action={clearMockData} successMessage="ล้างข้อมูลเรียบร้อยแล้ว">
             <button type="submit" className="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-200">
               ล้างข้อมูลทั้งหมด
             </button>
-          </form>
+          </ClientForm>
           <Link href="/admin/products/new" className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dark">
             + เพิ่มสินค้า
           </Link>
@@ -68,14 +69,14 @@ export default async function ProductsAdminPage() {
                       <Link href={`/admin/products/${product.id}/edit`} className="text-blue-500 hover:underline">
                         แก้ไข
                       </Link>
-                      <form action={async () => {
+                      <ClientForm action={async () => {
                         'use server';
                         await deleteProduct(product.id);
-                      }}>
+                      }} successMessage="ลบสินค้าเรียบร้อยแล้ว">
                         <button type="submit" className="text-red-500 hover:underline">
                           ลบ
                         </button>
-                      </form>
+                      </ClientForm>
                     </div>
                   </td>
                 </tr>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Package, LayoutDashboard, LogOut, Key, Settings } from 'lucide-react';
+import ClientForm from '@/components/ClientForm';
 
 export default function AdminLayout({
   children,
@@ -45,19 +46,19 @@ export default function AdminLayout({
         </nav>
         
         <div className="p-4 border-t border-gray-800">
-          <form action={async () => {
+          <ClientForm action={async () => {
             'use server';
             const { cookies } = await import('next/headers');
             const { redirect } = await import('next/navigation');
             const cookieStore = await cookies();
             cookieStore.delete('admin_token');
             redirect('/login');
-          }}>
+          }} successMessage="ออกจากระบบสำเร็จ!">
             <button type="submit" className="flex items-center gap-2 text-gray-400 hover:text-white w-full px-4 py-2">
               <LogOut className="w-5 h-5" />
               ออกจากระบบ
             </button>
-          </form>
+          </ClientForm>
         </div>
       </aside>
 

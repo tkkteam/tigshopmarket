@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
+import { Toaster } from 'react-hot-toast';
 
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
@@ -20,6 +21,7 @@ export default async function RootLayout({
   return (
     <html lang="th">
       <body className="min-h-screen flex flex-col bg-secondary text-foreground">
+        <Toaster position="bottom-right" />
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-8">
           {children}

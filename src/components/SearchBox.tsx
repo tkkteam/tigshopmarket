@@ -1,5 +1,6 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { searchProducts } from '@/actions/search';
@@ -98,7 +99,7 @@ export default function SearchBox({ isMobile = false }: { isMobile?: boolean }) 
                   onClick={handleSearch}
                   className="w-full text-center p-3 text-sm text-primary hover:bg-gray-50 font-medium"
                 >
-                  ดูผลลัพธ์ทั้งหมดสำหรับ "{query}"
+                  ดูผลลัพธ์ทั้งหมดสำหรับ &quot;{query}&quot;
                 </button>
               </li>
             </ul>

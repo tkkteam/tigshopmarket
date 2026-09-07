@@ -1,4 +1,5 @@
 import { getSettings, updateSettings } from '@/actions/setting';
+import ClientForm from '@/components/ClientForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,7 @@ export default async function SettingsPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <form action={updateSettings} className="space-y-4">
+        <ClientForm action={updateSettings} className="space-y-4" successMessage="บันทึกการตั้งค่าสำเร็จ!">
           <div>
             <label className="block text-sm font-medium mb-1">ลิงก์ Facebook</label>
             <input 
@@ -47,11 +48,11 @@ export default async function SettingsPage() {
           </div>
 
           <div className="pt-4">
-            <button type="submit" className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary-dark">
-              บันทึกการตั้งค่า
+            <button type="submit" className="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition">
+              บันทึกข้อมูล
             </button>
           </div>
-        </form>
+        </ClientForm>
       </div>
     </div>
   );

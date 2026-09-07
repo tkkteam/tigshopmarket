@@ -37,7 +37,7 @@ export default async function SearchPage(props: { searchParams: Promise<{ q?: st
 
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <h1 className="text-2xl font-bold text-gray-800 border-b pb-4 mb-6">
-          ผลการค้นหาสำหรับ: "{query}"
+          ผลการค้นหาสำหรับ: &quot;{query}&quot;
         </h1>
         
         {products.length > 0 ? (
@@ -70,7 +70,7 @@ export default async function SearchPage(props: { searchParams: Promise<{ q?: st
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">ไม่พบสินค้าที่ตรงกับการค้นหา "{query}"</p>
+            <p className="text-gray-500 mb-4">ไม่พบสินค้าที่ตรงกับการค้นหา &quot;{query}&quot;</p>
             <Link href="/" className="text-primary hover:underline">
               ← กลับไปเลือกซื้อสินค้าทั้งหมด
             </Link>
