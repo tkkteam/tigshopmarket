@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, LayoutDashboard, LogOut, Key } from 'lucide-react';
+import { Package, LayoutDashboard, LogOut, Key, Settings } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -33,6 +33,12 @@ export default function AdminLayout({
               <Link href="/admin/change-password" className="flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
                 <Key className="w-5 h-5" />
                 <span>เปลี่ยนรหัสผ่าน</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/settings" className="flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                <Settings className="w-5 h-5" />
+                <span>ตั้งค่าโซเชียลมีเดีย</span>
               </Link>
             </li>
           </ul>

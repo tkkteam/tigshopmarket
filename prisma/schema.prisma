@@ -92,5 +92,6 @@ model Setting {
   contactEmail String?
   facebook     String?
   lineId       String?
+  youtube      String?
 }
 

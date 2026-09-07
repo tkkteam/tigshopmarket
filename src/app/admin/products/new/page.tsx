@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import { addProduct, addCategory } from '@/actions/product';
 import Link from 'next/link';
+import ImageUploadBox from '@/components/ImageUploadBox';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,10 +76,8 @@ export default async function NewProductPage() {
             <textarea name="description" className="w-full border rounded px-3 py-2" rows={4}></textarea>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">รูปภาพสินค้า (สูงสุด 6 ภาพ)</label>
-            <input type="file" name="images" accept="image/*" multiple max="6" className="w-full border rounded px-3 py-2" />
-            <p className="text-xs text-gray-500 mt-1">สามารถเลือกได้หลายไฟล์พร้อมกัน</p>
+          <div className="border-t pt-4 mt-4">
+            <ImageUploadBox maxImages={9} />
           </div>
 
           <div className="pt-4">

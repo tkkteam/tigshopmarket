@@ -13,6 +13,14 @@ export default async function Home() {
     categories = await prisma.category.findMany({
       orderBy: { createdAt: 'desc' },
       take: 12,
+      include: {
+        products: {
+          take: 1,
+          include: {
+            images: { take: 1, orderBy: { sortOrder: 'asc' } }
+          }
+        }
+      }
     });
 
     products = await prisma.product.findMany({
@@ -50,12 +58,20 @@ export default async function Home() {
         <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase">หมวดหมู่สินค้า</h2>
         {categories.length > 0 ? (
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            {categories.map((cat) => (
-              <Link key={cat.id} href={`/category/${cat.id}`} className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
-                <span className="text-2xl mb-2">📁</span>
-                <span className="text-sm text-gray-700 text-center">{cat.name}</span>
+            {categories.map((cat) => {
+              const catImage = cat.products?.[0]?.images?.[0]?.imageUrl;
+              return (
+              <Link key={cat.id} href={`/category/${cat.id}`} className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow group">
+                {catImage ? (
+                  <div className="relative w-16 h-16 mb-2 rounded-full overflow-hidden border border-gray-200 group-hover:scale-105 transition-transform">
+                    <Image src={catImage} alt={cat.name} fill className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 mb-2 rounded-full bg-gray-100 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">📁</div>
+                )}
+                <span className="text-sm text-gray-700 text-center line-clamp-1">{cat.name}</span>
               </Link>
-            ))}
+            )})}
           </div>
         ) : (
           <p className="text-sm text-gray-500 text-center py-8">ยังไม่มีหมวดหมู่สินค้าในระบบ</p>

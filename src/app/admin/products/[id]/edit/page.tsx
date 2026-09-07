@@ -1,8 +1,9 @@
 import prisma from '@/lib/prisma';
-import { updateProduct } from '@/actions/product';
+import { updateProduct, setMainImage } from '@/actions/product';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import ImageUploadBox from '@/components/ImageUploadBox';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,11 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const [product, categories] = await Promise.all([
     prisma.product.findUnique({
       where: { id },
-      include: { images: true }
+      include: { 
+        images: {
+          orderBy: { sortOrder: 'asc' }
+        }
+      }
     }),
     prisma.category.findMany({
       orderBy: { createdAt: 'desc' }
@@ -76,22 +81,35 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
             <textarea name="description" defaultValue={product.description} className="w-full border rounded px-3 py-2" rows={4}></textarea>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">รูปภาพสินค้า (อัปโหลดใหม่เพื่อเปลี่ยนทั้งหมด สูงสุด 6 ภาพ)</label>
+          <div className="border-t pt-4 mt-4">
+            <label className="block text-sm font-medium mb-1">รูปปัจจุบัน ({product.images.length}/9)</label>
             {product.images.length > 0 && (
-              <div className="mb-3">
-                <p className="text-xs text-gray-500 mb-1">รูปปัจจุบัน:</p>
+              <div className="mb-4">
                 <div className="flex gap-2 flex-wrap">
-                  {product.images.map((img) => (
-                    <div key={img.id} className="relative w-20 h-20 bg-gray-100 rounded overflow-hidden border">
+                  {product.images.map((img, index) => (
+                    <div key={img.id} className="relative w-24 h-24 bg-gray-100 rounded overflow-hidden border group">
                       <Image src={img.imageUrl} alt={product.name} fill className="object-cover" />
+                      {index === 0 ? (
+                        <div className="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded-br z-10 font-medium">ภาพหลัก</div>
+                      ) : (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                          <form action={async () => {
+                            'use server';
+                            await setMainImage(product.id, img.id);
+                          }}>
+                            <button type="submit" className="text-white text-[10px] bg-gray-900/80 hover:bg-gray-900 px-2 py-1 rounded border border-gray-600">
+                              ตั้งเป็นภาพหลัก
+                            </button>
+                          </form>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            <input type="file" name="images" accept="image/*" multiple max="6" className="w-full border rounded px-3 py-2" />
-            <p className="text-xs text-gray-500 mt-1">หากอัปโหลดรูปใหม่ รูปเก่าทั้งหมดจะถูกลบออก (เลือกได้สูงสุด 6 ภาพ)</p>
+            
+            <ImageUploadBox maxImages={9} existingImagesCount={product.images.length} />
           </div>
 
           <div className="pt-4">

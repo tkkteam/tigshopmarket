@@ -37,7 +37,7 @@ export async function addProduct(formData: FormData) {
     });
 
     if (imageFiles && imageFiles.length > 0) {
-      const filesToUpload = imageFiles.filter(f => f.size > 0).slice(0, 6);
+      const filesToUpload = imageFiles.filter(f => f.size > 0).slice(0, 9);
       let sortOrder = 0;
       for (const file of filesToUpload) {
         const { fileId, imageUrl } = await uploadImageToR2(file);
@@ -127,7 +127,7 @@ export async function updateProduct(formData: FormData) {
         });
 
         let sortOrder = 0;
-        for (const file of validFiles.slice(0, 6)) {
+        for (const file of validFiles.slice(0, 9)) {
           const { fileId, imageUrl } = await uploadImageToR2(file);
           
           await prisma.productImage.create({
@@ -162,4 +162,29 @@ export async function clearMockData() {
   
   revalidatePath('/');
   revalidatePath('/admin/products');
+}
+
+export async function setMainImage(productId: string, imageId: string) {
+  const images = await prisma.productImage.findMany({
+    where: { productId },
+    orderBy: { sortOrder: 'asc' }
+  });
+
+  const otherImages = images.filter(img => img.id !== imageId);
+  const selectedImage = images.find(img => img.id === imageId);
+
+  if (!selectedImage) return;
+
+  const newOrder = [selectedImage, ...otherImages];
+
+  for (let i = 0; i < newOrder.length; i++) {
+    await prisma.productImage.update({
+      where: { id: newOrder[i].id },
+      data: { sortOrder: i }
+    });
+  }
+
+  revalidatePath('/admin/products');
+  revalidatePath(`/admin/products/${productId}/edit`);
+  revalidatePath('/');
 }
