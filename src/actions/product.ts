@@ -72,7 +72,12 @@ export async function deleteProduct(productId: string) {
 }
 
 export async function addCategory(name: string) {
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  let slug = name.toLowerCase().replace(/[^a-z0-9ก-๙]+/g, '-');
+  if (!slug || slug === '-') {
+    slug = 'category';
+  }
+  slug = `${slug}-${Date.now()}`;
+  
   await prisma.category.create({
     data: { name, slug }
   });
