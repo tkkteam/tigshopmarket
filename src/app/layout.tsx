@@ -29,7 +29,14 @@ export default async function RootLayout({
         
         <footer className="bg-white border-t py-8 mt-auto">
           <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">© {new Date().getFullYear()} TIG CENTER. All rights reserved.</p>
+            <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-gray-500">
+              <p>© {new Date().getFullYear()} TIG CENTER. All rights reserved.</p>
+              <div className="flex items-center gap-3">
+                <Link href="/terms" className="hover:text-primary transition-colors">ข้อตกลงในการให้บริการ</Link>
+                <span>|</span>
+                <Link href="/privacy" className="hover:text-primary transition-colors">นโยบายความเป็นส่วนตัว</Link>
+              </div>
+            </div>
             
             <div className="flex items-center gap-4">
               <span className="text-gray-600 font-medium">ติดตามเราบน:</span>
